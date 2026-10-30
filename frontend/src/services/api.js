@@ -1,4 +1,6 @@
-const BASE_URL = '/api';
+const BASE_URL = import.meta.env.VITE_API_URL 
+  ? `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/api` 
+  : '/api';
 
 export const getStoredToken = () => localStorage.getItem('trip_token');
 export const setStoredToken = (token) => localStorage.setItem('trip_token', token);

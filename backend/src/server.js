@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 import authRoutes from './routes/authRoutes.js';
@@ -35,18 +36,32 @@ app.use('/api/auth', authRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/govt', govtRoutes);
 
+// Serve Frontend build in production (if present)
+const frontendDistPath = path.join(__dirname, '../../frontend/dist');
+if (fs.existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(frontendDistPath, 'index.html'));
+  });
+}
+
 // Global Error Handler
 app.use((err, req, res, next) => {
   console.error('Unhandled server error:', err);
   res.status(500).json({ error: err.message || 'Internal Server Error' });
 });
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`====================================================`);
-  console.log(` Trip Management System API is running on port ${PORT}`);
-  console.log(` Health check: http://localhost:${PORT}/api/health`);
-  console.log(`====================================================`);
-});
+// Start Server (only if not running as a Vercel serverless function)
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`====================================================`);
+    console.log(` Trip Management System API is running on port ${PORT}`);
+    console.log(` Health check: http://localhost:${PORT}/api/health`);
+    console.log(`====================================================`);
+  });
+}
 
 export default app;
