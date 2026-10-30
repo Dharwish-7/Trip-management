@@ -1,0 +1,11 @@
+{
+  "name": "trip-management-system",
+  "version": "1.0.0",
+  "description": "Fullstack Trip Management System covering all 13 Jira user stories",
+  "scripts": {
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend && npm run dev",
+    "test:backend": "cd backend && npm test",
+    "build:frontend": "cd frontend && npm run build"
+  }
+}
